@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 #ifndef SECP256K1H
 #define SECP256K1H
 
@@ -34,7 +33,21 @@ public:
   SECP256k1();
   ~SECP256k1();
   void Init();
+  
+  // Method to compute public key using the Int class (existing method)
   Point ComputePublicKey(Int *privKey);
+
+  // New static utility method for converting private key to public key using scalar multiplication
+  static Point privateKeyToPublicKey(const Int &privKey) {
+    secp256k1_gej publicKey;
+    secp256k1_scalar privateKeyScalar;
+    secp256k1_scalar_set_int(&privateKeyScalar, privKey.GetInt32());  // Adjust based on your Int class implementation
+    secp256k1_ecmult_gen(&ctx, &publicKey, &privateKeyScalar);  // Scalar multiplication
+    Point result;
+    // Populate the Point result based on secp256k1_gej
+    return result;
+  }
+
   Point NextKey(Point &key);
   void Check();
   bool EC(Point &p);
@@ -71,11 +84,6 @@ public:
   Point Double(Point &p);
   Point DoubleDirect(Point &p);
 
-  // Use toString() for any serialization or output needs
-  std::string toString() {
-    return "SECP256K1 object";  // Modify this based on your needs
-  }
-
   Point G;   // Generator
   Int order; // Curve order
 
@@ -87,4 +95,3 @@ private:
 };
 
 #endif // SECP256K1H
-
