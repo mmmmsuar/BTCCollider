@@ -15,8 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SECP256K1H
-#define SECP256K1H
+#ifndef SECP256k1H
+#define SECP256k1H
 
 #include "Point.h"
 #include <string>
@@ -27,12 +27,12 @@
 #define P2SH   1
 #define BECH32 2
 
-class Secp256K1 {
+class SECP256k1 {
 
 public:
 
-  Secp256K1();
-  ~Secp256K1();
+  SECP256k1();
+  ~SECP256k1();
   void Init();
   Point ComputePublicKey(Int *privKey);
   Point NextKey(Point &key);
@@ -81,4 +81,4 @@ private:
 
 };
 
-#endif // SECP256K1H
+#endif // SECP256k1H
