@@ -1,5 +1,12 @@
 # BTCCollider
 
+Edited for educational purposes only.
+
+
+
+
+
+======JLP VERSION===============
 BTCCollider generates BTC p2pkh address pair (and their corresponding private keys) that 
 share the same prefix. It looks for a pair of distinct HASH160 starting with the same bits 
 (a partial collision) using the so called "distinguished point" method which allows 
