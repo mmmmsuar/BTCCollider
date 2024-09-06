@@ -1,24 +1,31 @@
-# Use an official Ubuntu base image
-FROM ubuntu:20.04
+# Base image
+FROM nvidia/cuda:11.4.2-devel-ubuntu20.04
 
-# Install necessary packages
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libssl-dev \
+    autoconf \
+    libtool \
+    pkg-config \
     libgmp-dev \
-    wget \
+    libsecp256k1-dev \
+    git \
     curl \
-    git
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy the source code into the container
-COPY . /usr/src/btccollider
+# Install secp256k1 library
+RUN git clone https://github.com/bitcoin-core/secp256k1.git /usr/src/secp256k1
+WORKDIR /usr/src/secp256k1
+RUN ./autogen.sh && ./configure --enable-module-recovery && make && make install
 
-# Set the working directory
-WORKDIR /usr/src/btccollider
+# Clone the BTCCollider repo
+WORKDIR /usr/src/
+COPY . /usr/src/BTCCollider
+WORKDIR /usr/src/BTCCollider
 
-# Run make to build the binary
-RUN make
+# Compile BTCCollider
+RUN make clean && make
 
-# Define the default command
+# Command to run the program
 CMD ["./BTCCollider"]
 
