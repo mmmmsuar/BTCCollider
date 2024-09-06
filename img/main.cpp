@@ -1,15 +1,3 @@
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
-
-// Open CSV file for output
-std::ofstream outfile("private_keys_p2pkh.csv");
-outfile << "PrivateKey,Address" << std::endl; // CSV headers
-
-// Write to CSV in the loop
-outfile << currentKey.toString() << "," << p2pkhAddress << std::endl;
-
 #include "Timer.h"
 #include "BTCCollider.h"
 #include "SECP256K1.h"
@@ -33,7 +21,10 @@ void generatePrivateKeys() {
     Int currentKey(START_KEY);
     Int endKey(END_KEY);
     size_t batchSize = 0;
-    std::ofstream outfile("private_keys_p2pkh.txt");
+
+    // Open CSV file for output
+    std::ofstream outfile("private_keys_p2pkh.csv");
+    outfile << "PrivateKey,Address" << std::endl; // CSV headers
     
     // Loop through the key range
     while (currentKey <= endKey) {
@@ -55,22 +46,14 @@ void generatePrivateKeys() {
         // Encode into Base58
         std::string p2pkhAddress = base58Encode(addressData);
         
-        // Write to file
-        outfile << currentKey.toString() << " " << p2pkhAddress << std::endl;
+        // Write to CSV
+        outfile << currentKey.toString() << "," << p2pkhAddress << std::endl;
         batchSize += currentKey.toString().length() + p2pkhAddress.length();
         
         // Check if batch size exceeds export size
         if (batchSize >= EXPORT_SIZE) {
             outfile.flush(); // Write current batch to disk
             batchSize = 0;
-        
-        // Open CSV file for output
-        std::ofstream outfile("private_keys_p2pkh.csv");
-        outfile << "PrivateKey,Address" << std::endl; // CSV headers
-
-        // Write to CSV in the loop
-        outfile << currentKey.toString() << "," << p2pkhAddress << std::endl;
-        
         }
 
         // Increment to next private key
@@ -95,3 +78,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
