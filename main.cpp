@@ -1,6 +1,6 @@
 #include "Timer.h"
 #include "BTCCollider.h"
-#include "SECP256K1.h"
+#include "SECP256k1.h"
 #include "hash/sha256.h"
 #include "hash/ripemd160.h"
 #include "Base58.h"
@@ -29,7 +29,7 @@ void generatePrivateKeys(const std::string& startKey, const std::string& endKey)
     // Loop through the key range
     while (currentKey <= endKeyInt) {
         // Compute public key from private key
-        Point publicKey = SECP256K1::privateKeyToPublicKey(currentKey);
+        Point publicKey = SECP256k1::privateKeyToPublicKey(currentKey);
         
         // Generate P2PKH address
         std::vector<uint8_t> sha256Hash = sha256(publicKey.serialize());
