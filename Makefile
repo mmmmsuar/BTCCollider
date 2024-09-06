@@ -2,7 +2,7 @@
 # Makefile for BTCCollider
 #
 
-SRC = Base58.cpp IntGroup.cpp main_modified.cpp Random.cpp \
+SRC = Base58.cpp IntGroup.cpp main.cpp Random.cpp \
       Timer.cpp Int.cpp IntMod.cpp Point.cpp SECP256K1.cpp \
       BTCCollider.cpp hash/ripemd160.cpp \
       hash/sha256.cpp hash/sha512.cpp hash/ripemd160_sse.cpp \
@@ -13,7 +13,7 @@ OBJDIR = obj
 ifdef gpu
 
 OBJET = $(addprefix $(OBJDIR)/, \
-        Base58.o IntGroup.o main_modified.o Random.o Timer.o Int.o \
+        Base58.o IntGroup.o main.o Random.o Timer.o Int.o \
         IntMod.o Point.o SECP256K1.o BTCCollider.o \
         hash/ripemd160.o hash/sha256.o hash/sha512.o \
         hash/ripemd160_sse.o hash/sha256_sse.o \
@@ -22,7 +22,7 @@ OBJET = $(addprefix $(OBJDIR)/, \
 else
 
 OBJET = $(addprefix $(OBJDIR)/, \
-        Base58.o IntGroup.o main_modified.o Random.o Timer.o Int.o \
+        Base58.o IntGroup.o main.o Random.o Timer.o Int.o \
         IntMod.o Point.o SECP256K1.o BTCCollider.o \
         hash/ripemd160.o hash/sha256.o hash/sha512.o \
         hash/ripemd160_sse.o hash/sha256_sse.o Bech32.o \
