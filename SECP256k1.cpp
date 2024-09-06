@@ -22,10 +22,10 @@
 #include "Bech32.h"
 #include <string.h>
 
-Secp256K1::Secp256K1() {
+SECP256k1::SECP256k1() {
 }
 
-void Secp256K1::Init() {
+void SECP256k1::Init() {
 
   // Prime for the finite field
   Int P;
@@ -56,7 +56,7 @@ void Secp256K1::Init() {
 
 }
 
-Secp256K1::~Secp256K1() {
+SECP256k1::~SECP256k1() {
 }
 
 void PrintResult(bool ok) {
@@ -68,7 +68,7 @@ void PrintResult(bool ok) {
   }
 }
 
-void CheckAddress(Secp256K1 *T,std::string address,std::string privKeyStr) {
+void CheckAddress(SECP256k1 *T,std::string address,std::string privKeyStr) {
 
   bool isCompressed;
   int type;
@@ -102,7 +102,7 @@ void CheckAddress(Secp256K1 *T,std::string address,std::string privKeyStr) {
 
 }
 
-void Secp256K1::Check() {
+void SECP256k1::Check() {
 
   printf("Check Generator :");
 
@@ -169,7 +169,7 @@ void Secp256K1::Check() {
 }
 
 
-Point Secp256K1::ComputePublicKey(Int *privKey) {
+Point SECP256k1::ComputePublicKey(Int *privKey) {
 
   int i = 0;
   uint8_t b;
@@ -196,13 +196,13 @@ Point Secp256K1::ComputePublicKey(Int *privKey) {
 
 }
 
-Point Secp256K1::NextKey(Point &key) {
+Point SECP256k1::NextKey(Point &key) {
   // Input key must be reduced and different from G
   // in order to use AddDirect
   return AddDirect(key,G);
 }
 
-Int Secp256K1::DecodePrivateKey(char *key,bool *compressed) {
+Int SECP256k1::DecodePrivateKey(char *key,bool *compressed) {
 
   Int ret;
   ret.SetInt32(0);
@@ -343,7 +343,7 @@ Int Secp256K1::DecodePrivateKey(char *key,bool *compressed) {
 (buff)[14] = 0; \
 (buff)[15] = 0xB0;
 
-void Secp256K1::GetHash160(int type,bool compressed,
+void SECP256k1::GetHash160(int type,bool compressed,
   Point &k0,Point &k1,Point &k2,Point &k3,
   uint8_t *h0,uint8_t *h1,uint8_t *h2,uint8_t *h3) {
 
@@ -431,7 +431,7 @@ void Secp256K1::GetHash160(int type,bool compressed,
 
 }
 
-void Secp256K1::GetCompressedHash160(int type,
+void SECP256k1::GetCompressedHash160(int type,
   Int *x0, Int *x1, Int *x2, Int *x3,
   bool y0Odd, bool y1Odd, bool y2Odd, bool y3Odd,
   uint8_t *h0, uint8_t *h1, uint8_t *h2, uint8_t *h3) {
@@ -501,7 +501,7 @@ void Secp256K1::GetCompressedHash160(int type,
 
 }
 
-uint8_t Secp256K1::GetByte(std::string &str, int idx) {
+uint8_t SECP256k1::GetByte(std::string &str, int idx) {
 
   char tmp[3];
   int  val;
@@ -519,7 +519,7 @@ uint8_t Secp256K1::GetByte(std::string &str, int idx) {
 
 }
 
-Point Secp256K1::ParsePublicKeyHex(std::string str,bool &isCompressed) {
+Point SECP256k1::ParsePublicKeyHex(std::string str,bool &isCompressed) {
 
   Point ret;
   ret.Clear();
@@ -583,7 +583,7 @@ Point Secp256K1::ParsePublicKeyHex(std::string str,bool &isCompressed) {
 
 }
 
-std::string Secp256K1::GetPublicKeyHex(bool compressed, Point &pubKey) {
+std::string SECP256k1::GetPublicKeyHex(bool compressed, Point &pubKey) {
 
   unsigned char publicKeyBytes[128];
   char tmp[3];
@@ -618,7 +618,7 @@ std::string Secp256K1::GetPublicKeyHex(bool compressed, Point &pubKey) {
 
 }
 
-void Secp256K1::GetHash160(int type, bool compressed, Point &pubKey, unsigned char *hash) {
+void SECP256k1::GetHash160(int type, bool compressed, Point &pubKey, unsigned char *hash) {
 
   unsigned char shapk[64];
 
@@ -670,7 +670,7 @@ void Secp256K1::GetHash160(int type, bool compressed, Point &pubKey, unsigned ch
 
 }
 
-void Secp256K1::GetCompressedHash160(int type, Int *x, bool yOdd, unsigned char *hash) {
+void SECP256k1::GetCompressedHash160(int type, Int *x, bool yOdd, unsigned char *hash) {
 
   unsigned char shapk[64];
 
@@ -706,7 +706,7 @@ void Secp256K1::GetCompressedHash160(int type, Int *x, bool yOdd, unsigned char 
 
 }
 
-std::string Secp256K1::GetPrivAddress(bool compressed,Int &privKey) {
+std::string SECP256k1::GetPrivAddress(bool compressed,Int &privKey) {
 
   unsigned char address[38];
 
@@ -748,7 +748,7 @@ std::string Secp256K1::GetPrivAddress(bool compressed,Int &privKey) {
 (buff)[14] = 0; \
 (buff)[15] = 0xA8;
 
-std::vector<std::string> Secp256K1::GetAddress(int type, bool compressed, unsigned char *h1, unsigned char *h2, unsigned char *h3, unsigned char *h4) {
+std::vector<std::string> SECP256k1::GetAddress(int type, bool compressed, unsigned char *h1, unsigned char *h2, unsigned char *h3, unsigned char *h4) {
 
   std::vector<std::string> ret;
 
@@ -813,7 +813,7 @@ std::vector<std::string> Secp256K1::GetAddress(int type, bool compressed, unsign
 
 }
 
-std::string Secp256K1::GetAddress(int type, bool compressed,unsigned char *hash160) {
+std::string SECP256k1::GetAddress(int type, bool compressed,unsigned char *hash160) {
 
   unsigned char address[25];
   switch(type) {
@@ -842,7 +842,7 @@ std::string Secp256K1::GetAddress(int type, bool compressed,unsigned char *hash1
 
 }
 
-std::string Secp256K1::GetAddress(int type, bool compressed, Point &pubKey) {
+std::string SECP256k1::GetAddress(int type, bool compressed, Point &pubKey) {
 
   unsigned char address[25];
 
@@ -881,7 +881,7 @@ std::string Secp256K1::GetAddress(int type, bool compressed, Point &pubKey) {
 
 }
 
-bool Secp256K1::CheckPudAddress(std::string address) {
+bool SECP256k1::CheckPudAddress(std::string address) {
 
   std::vector<unsigned char> pubKey;
   DecodeBase58(address,pubKey);
@@ -900,7 +900,7 @@ bool Secp256K1::CheckPudAddress(std::string address) {
 
 }
 
-Point Secp256K1::AddDirect(Point &p1,Point &p2) {
+Point SECP256k1::AddDirect(Point &p1,Point &p2) {
 
   Int _s;
   Int _p;
@@ -927,7 +927,7 @@ Point Secp256K1::AddDirect(Point &p1,Point &p2) {
 
 }
 
-Point Secp256K1::Add2(Point &p1, Point &p2) {
+Point SECP256k1::Add2(Point &p1, Point &p2) {
 
   // P2.z = 1
 
@@ -971,7 +971,7 @@ Point Secp256K1::Add2(Point &p1, Point &p2) {
 
 }
 
-Point Secp256K1::Add(Point &p1,Point &p2) {
+Point SECP256k1::Add(Point &p1,Point &p2) {
 
   Int u;
   Int v;
@@ -1040,7 +1040,7 @@ Point Secp256K1::Add(Point &p1,Point &p2) {
   return r;
 }
 
-Point Secp256K1::DoubleDirect(Point &p) {
+Point SECP256k1::DoubleDirect(Point &p) {
 
   Int _s;
   Int _p;
@@ -1070,7 +1070,7 @@ Point Secp256K1::DoubleDirect(Point &p) {
   return r;
 }
 
-Point Secp256K1::Double(Point &p) {
+Point SECP256k1::Double(Point &p) {
 
 
   /*
@@ -1138,7 +1138,7 @@ Point Secp256K1::Double(Point &p) {
   return r;
 }
 
-Int Secp256K1::GetY(Int x,bool isEven) {
+Int SECP256k1::GetY(Int x,bool isEven) {
 
   Int _s;
   Int _p;
@@ -1159,7 +1159,7 @@ Int Secp256K1::GetY(Int x,bool isEven) {
 
 }
 
-bool Secp256K1::EC(Point &p) {
+bool SECP256k1::EC(Point &p) {
 
   Int _s;
   Int _p;
