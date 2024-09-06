@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Trigger this workflow on push to the main branch
+      - master  # Trigger this workflow on push to the main branch
 
 jobs:
   build:
@@ -34,3 +34,4 @@ jobs:
       # Step 5: Push the Docker image to Docker Hub
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/btccollider:latest
+
