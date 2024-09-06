@@ -11,15 +11,15 @@
 
 #define RELEASE "1.1"
 
-// Define the key range
-const std::string START_KEY = "20000000000000000";
-const std::string END_KEY = "3ffffffffffffffff";
+// Default key range
+const std::string DEFAULT_START_KEY = "20000000000000000";
+const std::string DEFAULT_END_KEY = "3ffffffffffffffff";
 const size_t EXPORT_SIZE = 500 * 1024 * 1024;  // 500MB size for exporting keys
 
-// Function to generate private keys
-void generatePrivateKeys() {
-    Int currentKey(START_KEY);
-    Int endKey(END_KEY);
+// Function to generate private keys with custom range
+void generatePrivateKeys(const std::string& startKey, const std::string& endKey) {
+    Int currentKey(startKey);
+    Int endKeyInt(endKey);
     size_t batchSize = 0;
 
     // Open CSV file for output
@@ -27,7 +27,7 @@ void generatePrivateKeys() {
     outfile << "PrivateKey,Address" << std::endl; // CSV headers
     
     // Loop through the key range
-    while (currentKey <= endKey) {
+    while (currentKey <= endKeyInt) {
         // Compute public key from private key
         Point publicKey = SECP256K1::privateKeyToPublicKey(currentKey);
         
@@ -67,10 +67,24 @@ int main(int argc, char* argv[]) {
     Timer timer;
     timer.start();
     
+    // Define default start and end keys
+    std::string startKey = DEFAULT_START_KEY;
+    std::string endKey = DEFAULT_END_KEY;
+    
+    // Check if the user provided custom range arguments
+    if (argc == 3) {
+        startKey = argv[1];
+        endKey = argv[2];
+    } else if (argc != 1) {
+        std::cerr << "Usage: ./BTCCollider [startKey endKey]" << std::endl;
+        return 1;
+    }
+
     try {
-        generatePrivateKeys();
+        generatePrivateKeys(startKey, endKey);
         timer.stop();
-        std::cout << "Finished generating keys in " << timer.elapsedSeconds() << " seconds." << std::endl;
+        std::cout << "Finished generating keys from " << startKey << " to " << endKey
+                  << " in " << timer.elapsedSeconds() << " seconds." << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
