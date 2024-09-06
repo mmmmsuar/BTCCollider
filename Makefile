@@ -1,12 +1,13 @@
 #---------------------------------------------------------------------
-# Makefile for BTCCollider
+# Makefile for BTCCollider with secp256k1 integration
 #
 
 SRC = Base58.cpp IntGroup.cpp main.cpp Random.cpp \
       Timer.cpp Int.cpp IntMod.cpp Point.cpp SECP256k1.cpp \
       BTCCollider.cpp hash/ripemd160.cpp \
       hash/sha256.cpp hash/sha512.cpp hash/ripemd160_sse.cpp \
-      hash/sha256_sse.cpp Bech32.cpp HashTable.cpp
+      hash/sha256_sse.cpp Bech32.cpp HashTable.cpp \
+      /usr/src/secp256k1/*.c  # Added secp256k1 source files
 
 OBJDIR = obj
 
@@ -37,18 +38,18 @@ NVCC       = $(CUDA)/bin/nvcc
 
 ifdef gpu
 ifdef debug
-CXXFLAGS   = -DWITHGPU -m64  -mssse3 -Wno-unused-result -Wno-write-strings -g -I. -I$(CUDA)/include
+CXXFLAGS   = -DWITHGPU -m64  -mssse3 -Wno-unused-result -Wno-write-strings -g -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
 else
-CXXFLAGS   =  -DWITHGPU -m64 -mssse3 -Wno-unused-result -Wno-write-strings -O2 -I. -I$(CUDA)/include
+CXXFLAGS   =  -DWITHGPU -m64 -mssse3 -Wno-unused-result -Wno-write-strings -O2 -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
 endif
-LFLAGS     = -lpthread -L$(CUDA)/lib64 -lcudart
+LFLAGS     = -lpthread -L$(CUDA)/lib64 -lcudart -lsecp256k1  # Linked secp256k1 library
 else
 ifdef debug
-CXXFLAGS   = -m64 -mssse3 -Wno-unused-result -Wno-write-strings -g -I. -I$(CUDA)/include
+CXXFLAGS   = -m64 -mssse3 -Wno-unused-result -Wno-write-strings -g -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
 else
-CXXFLAGS   =  -m64 -mssse3 -Wno-unused-result -Wno-write-strings -O2 -I. -I$(CUDA)/include
+CXXFLAGS   =  -m64 -mssse3 -Wno-unused-result -Wno-write-strings -O2 -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
 endif
-LFLAGS     = -lpthread
+LFLAGS     = -lpthread -lsecp256k1  # Linked secp256k1 library
 endif
 
 #--------------------------------------------------------------------
