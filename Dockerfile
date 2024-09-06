@@ -21,3 +21,4 @@ RUN make
 
 # Define the default command
 CMD ["./BTCCollider"]
+
