@@ -18,8 +18,8 @@ const size_t EXPORT_SIZE = 500 * 1024 * 1024;  // 500MB size for exporting keys
 
 // Function to generate private keys with custom range
 void generatePrivateKeys(const std::string& startKey, const std::string& endKey) {
-    Int currentKey(startKey);
-    Int endKeyInt(endKey);
+    Int currentKey(std::stoll(startKey));  // Convert string to int64_t
+    Int endKeyInt(std::stoll(endKey));     // Convert string to int64_t
     size_t batchSize = 0;
 
     // Open CSV file for output
@@ -32,23 +32,23 @@ void generatePrivateKeys(const std::string& startKey, const std::string& endKey)
         Point publicKey = SECP256k1::privateKeyToPublicKey(currentKey);
         
         // Generate P2PKH address
-        std::vector<uint8_t> sha256Hash = sha256(publicKey.serialize());
-        std::vector<uint8_t> ripemdHash = ripemd160(sha256Hash);
+        std::vector<uint8_t> sha256Hash = sha256(publicKey.serialize().data(), publicKey.serialize().size());
+        std::vector<uint8_t> ripemdHash = ripemd160(sha256Hash.data(), sha256Hash.size());
         
         // Add version byte (0x00 for P2PKH) and checksum
         std::vector<uint8_t> addressData(1, 0x00); // P2PKH address version
         addressData.insert(addressData.end(), ripemdHash.begin(), ripemdHash.end());
         
         // Double SHA-256 for checksum
-        std::vector<uint8_t> checksum = sha256(sha256(addressData));
+        std::vector<uint8_t> checksum = sha256(sha256(addressData.data(), addressData.size()));
         addressData.insert(addressData.end(), checksum.begin(), checksum.begin() + 4);
         
         // Encode into Base58
         std::string p2pkhAddress = base58Encode(addressData);
         
         // Write to CSV
-        outfile << currentKey.toString() << "," << p2pkhAddress << std::endl;
-        batchSize += currentKey.toString().length() + p2pkhAddress.length();
+        outfile << currentKey << "," << p2pkhAddress << std::endl;
+        batchSize += std::to_string(currentKey).length() + p2pkhAddress.length();
         
         // Check if batch size exceeds export size
         if (batchSize >= EXPORT_SIZE) {
@@ -57,7 +57,7 @@ void generatePrivateKeys(const std::string& startKey, const std::string& endKey)
         }
 
         // Increment to next private key
-        currentKey = currentKey + Int("1");
+        currentKey = currentKey + 1;
     }
     
     outfile.close();
@@ -92,3 +92,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
