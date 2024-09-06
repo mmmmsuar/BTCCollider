@@ -1,93 +1,30 @@
-#---------------------------------------------------------------------
-# Makefile for BTCCollider with secp256k1 integration
-#
+# Base image
+FROM nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
 
-SRC = Base58.cpp IntGroup.cpp main.cpp Random.cpp \
-      Timer.cpp Int.cpp IntMod.cpp Point.cpp SECP256k1.cpp \
-      BTCCollider.cpp hash/ripemd160.cpp \
-      hash/sha256.cpp hash/sha512.cpp hash/ripemd160_sse.cpp \
-      hash/sha256_sse.cpp Bech32.cpp HashTable.cpp \
-      /usr/src/secp256k1/*.c  # Added secp256k1 source files
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    autoconf \
+    libtool \
+    pkg-config \
+    libgmp-dev \
+    libsecp256k1-dev \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-OBJDIR = obj
+# Install secp256k1 library
+RUN git clone https://github.com/bitcoin-core/secp256k1.git /usr/src/secp256k1
+WORKDIR /usr/src/secp256k1
+RUN ./autogen.sh && ./configure --enable-module-recovery && make && make install
 
-ifdef gpu
+# Clone the BTCCollider repo
+WORKDIR /usr/src/
+COPY . /usr/src/BTCCollider
+WORKDIR /usr/src/BTCCollider
 
-OBJET = $(addprefix $(OBJDIR)/, \
-        Base58.o IntGroup.o main.o Random.o Timer.o Int.o \
-        IntMod.o Point.o SECP256K1.o BTCCollider.o \
-        hash/ripemd160.o hash/sha256.o hash/sha512.o \
-        hash/ripemd160_sse.o hash/sha256_sse.o \
-        GPU/GPUEngine.o Bech32.o HashTable.o)
+# Compile BTCCollider
+RUN make clean && make
 
-else
-
-OBJET = $(addprefix $(OBJDIR)/, \
-        Base58.o IntGroup.o main.o Random.o Timer.o Int.o \
-        IntMod.o Point.o SECP256K1.o BTCCollider.o \
-        hash/ripemd160.o hash/sha256.o hash/sha512.o \
-        hash/ripemd160_sse.o hash/sha256_sse.o Bech32.o \
-        HashTable.o )
-
-endif
-
-CXX        = g++
-CUDA       = /usr/local/cuda-8.0
-CXXCUDA    = /usr/bin/g++-4.8
-NVCC       = $(CUDA)/bin/nvcc
-
-ifdef gpu
-ifdef debug
-CXXFLAGS   = -DWITHGPU -m64  -mssse3 -Wno-unused-result -Wno-write-strings -g -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
-else
-CXXFLAGS   =  -DWITHGPU -m64 -mssse3 -Wno-unused-result -Wno-write-strings -O2 -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
-endif
-LFLAGS     = -lpthread -L$(CUDA)/lib64 -lcudart -lsecp256k1  # Linked secp256k1 library
-else
-ifdef debug
-CXXFLAGS   = -m64 -mssse3 -Wno-unused-result -Wno-write-strings -g -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
-else
-CXXFLAGS   =  -m64 -mssse3 -Wno-unused-result -Wno-write-strings -O2 -I. -I$(CUDA)/include -I/usr/src/secp256k1/include  # Added secp256k1 include
-endif
-LFLAGS     = -lpthread -lsecp256k1  # Linked secp256k1 library
-endif
-
-#--------------------------------------------------------------------
-
-ifdef gpu
-ifdef debug
-$(OBJDIR)/GPU/GPUEngine.o: GPU/GPUEngine.cu
-	$(NVCC) -G -maxrregcount=0 --ptxas-options=-v --compile --compiler-options -fPIC -ccbin $(CXXCUDA) -m64 -g -I$(CUDA)/include -gencode=arch=compute_$(ccap),code=sm_$(ccap) -o $(OBJDIR)/GPU/GPUEngine.o -c GPU/GPUEngine.cu
-else
-$(OBJDIR)/GPU/GPUEngine.o: GPU/GPUEngine.cu
-	$(NVCC) -maxrregcount=0 --ptxas-options=-v --compile --compiler-options -fPIC -ccbin $(CXXCUDA) -m64 -O2 -I$(CUDA)/include -gencode=arch=compute_$(ccap),code=sm_$(ccap) -o $(OBJDIR)/GPU/GPUEngine.o -c GPU/GPUEngine.cu
-endif
-endif
-
-$(OBJDIR)/%.o : %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
-
-all: BTCCollider
-
-BTCCollider: $(OBJET)
-	@echo Making BTCCollider...
-	$(CXX) $(OBJET) $(LFLAGS) -o BTCCollider
-
-$(OBJET): | $(OBJDIR) $(OBJDIR)/GPU $(OBJDIR)/hash
-
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
-
-$(OBJDIR)/GPU: $(OBJDIR)
-	cd $(OBJDIR) &&	mkdir -p GPU
-
-$(OBJDIR)/hash: $(OBJDIR)
-	cd $(OBJDIR) &&	mkdir -p hash
-
-clean:
-	@echo Cleaning...
-	@rm -f obj/*.o
-	@rm -f obj/GPU/*.o
-	@rm -f obj/hash/*.o
-
-
+# Command to run the program
+CMD ["./BTCCollider"]
