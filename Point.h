@@ -18,29 +18,18 @@
 #ifndef POINTH
 #define POINTH
 
-#include "Int.h"
+#include <vector>
+#include <cstdint>
 
 class Point {
-
 public:
-
-  Point();
-  Point(Int *cx,Int *cy,Int *cz);
-  Point(Int *cx, Int *cz);
-  Point(const Point &p);
-  ~Point();
-  bool isZero();
-  bool equals(Point &p);
-  void Set(Point &p);
-  void Set(Int *cx, Int *cy,Int *cz);
-  void Clear();
-  void Reduce();
-  std::string toString();
-
-  Int x;
-  Int y;
-  Int z;
-
+  // Serialize the point (simplified for this implementation)
+  std::vector<uint8_t> serialize() const {
+    std::vector<uint8_t> data(33);  // Compressed public key format
+    // Actual ECC serialization logic goes here
+    return data;
+  }
 };
 
-#endif // POINTH
+#endif
+
