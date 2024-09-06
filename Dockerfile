@@ -1,11 +1,11 @@
-# Use an official base image
+# Use an official Ubuntu base image
 FROM ubuntu:20.04
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libgmp-dev \
     libssl-dev \
+    libgmp-dev \
     wget \
     curl \
     git
